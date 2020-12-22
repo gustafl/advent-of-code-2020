@@ -1,7 +1,3 @@
-import sys
-import itertools
-
-
 def get_input(file):
     with open(file, 'rt', encoding='utf8') as f:
         lines = []
@@ -14,9 +10,7 @@ def get_input(file):
 def get_ingredients(lines):
     ingredients = set()
     for line in lines:
-
-
-
+        pass
 
 
 def main():
