@@ -17,69 +17,84 @@ def get_player_cards(lines, player):
     return cards
 
 
-def deja_vu(cards, previous_hands):
-    fs = frozenset(cards)
-    h = hash(fs)
-    if h in previous_hands:
+def hand_to_hash(hand):
+    s = " ".join(str(x) for x in hand)
+    h = hash(s)
+    return h
+
+
+def deja_vu(hand, previous_hands):
+    hand = hand_to_hash(hand)
+    if hand in previous_hands:
         return True
+    else:
+        return False
 
 
-def play_game(p1_cards, p2_cards, game):
-    p1_cards = p1_cards.copy()
-    p2_cards = p2_cards.copy()
+def play_game(p1_hand, p2_hand, game):
+    p1_hand = p1_hand.copy()
+    p2_hand = p2_hand.copy()
     p1_previous_hands = []
     p2_previous_hands = []
     print(f'== Game {game} ==\n')
     round_ = 1
-    while p1_cards and p2_cards:
+    while p1_hand and p2_hand:
         # Make sure we haven't been here before in this game
-        if deja_vu(p1_cards, p1_previous_hands) and deja_vu(p2_cards, p2_previous_hands):
+        if deja_vu(p1_hand, p1_previous_hands) and deja_vu(p2_hand, p2_previous_hands):
             return 1  # Player 1 wins
-        play_round(p1_cards, p2_cards, game, round_)
+        else:
+            # If this is a new situation in this game, save the new hands
+            p1_previous_hands.append(hand_to_hash(p1_hand))
+            p2_previous_hands.append(hand_to_hash(p2_hand))
+            # Play new round
+            p1_hand, p2_hand = play_round(p1_hand, p2_hand, game, round_)
+
         round_ += 1
 
 
-def play_round(p1_cards, p2_cards, game, round_):
+def play_round(p1_hand, p2_hand, game, round_):
     print(f'-- Round {round_} (Game {game}) --')
-    print(f"Player 1's deck: {p1_cards}")
-    print(f"Player 2's deck: {p2_cards}")
-    p1_card = p1_cards.pop(0)
+    print(f"Player 1's deck: {p1_hand}")
+    print(f"Player 2's deck: {p2_hand}")
+    p1_card = p1_hand.pop(0)
     print(f"Player 1 plays: {p1_card}")
-    p2_card = p2_cards.pop(0)
+    p2_card = p2_hand.pop(0)
     print(f"Player 2 plays: {p2_card}")
-    if len(p1_cards) >= p1_card and len(p2_cards) >= p2_card:
+    if len(p1_hand) >= p1_card and len(p2_hand) >= p2_card:
         # Determine who wins the round by playing a new game of Recursive Combat
         pass
     else:
         # Determine who wins the round by comparing cards
         if p1_card > p2_card:
             print("Player 1 wins the round!\n")
-            p1_cards.append(p1_card)
-            p1_cards.append(p2_card)
+            p1_hand.append(p1_card)
+            p1_hand.append(p2_card)
         else:
             print("Player 2 wins the round!\n")
-            p2_cards.append(p2_card)
-            p2_cards.append(p1_card)
+            p2_hand.append(p2_card)
+            p2_hand.append(p1_card)
+
+    return p1_hand, p2_hand
 
 
-def calculate_score(cards):
+def calculate_score(hand):
     score = 0
-    for i, v in enumerate(cards):
-        score += v * (len(cards) - i)
+    for i, v in enumerate(hand):
+        score += v * (len(hand) - i)
     return score
 
 
 def main():
-    p1_cards, p2_cards = get_input('input.txt')
+    p1_hand, p2_hand = get_input('sample.txt')
     game = 1
-    while p1_cards and p2_cards:
-        play_game(p1_cards, p2_cards, game)
+    while p1_hand and p2_hand:
+        play_game(p1_hand, p2_hand, game)
         game += 1
     print("== Post-game results ==")
-    print(f"Player 1's deck: {p1_cards}")
-    print(f"Player 2's deck: {p2_cards}")
-    cards = p1_cards if p1_cards else p2_cards
-    score = calculate_score(cards)
+    print(f"Player 1's deck: {p1_hand}")
+    print(f"Player 2's deck: {p2_hand}")
+    hand = p1_hand if p1_hand else p2_hand
+    score = calculate_score(hand)
     print(f"\nThe final score is: {score}")
 
 
