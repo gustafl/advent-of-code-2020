@@ -56,4 +56,4 @@ def main():
     print(f"\nThe final score is: {score}")
 
 
-main()
+main()  # The final score is: 33772 (correct)
