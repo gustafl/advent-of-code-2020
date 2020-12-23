@@ -81,5 +81,4 @@ def main():
 
 main()
 
-# Judging from all the samples this works, but with the real input it takes
-# too long. Nevermind, I solved it.
+# Work in progress.

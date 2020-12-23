@@ -51,4 +51,4 @@ def main():
 main()
 
 # Not: 3251 (too high)
-# I consider it done. The sample works.
+# The sample works, but not the input.

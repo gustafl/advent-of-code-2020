@@ -40,5 +40,3 @@ for slope in slopes:
     result *= trees  # Result is 1 before first multiplication
 
 print("{} * {} * {} * {} * {} = {}".format(sr[0], sr[1], sr[2], sr[3], sr[4], result))
-
-# 1149739920 (not right, according to AoC)

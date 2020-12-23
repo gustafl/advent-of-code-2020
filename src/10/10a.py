@@ -13,7 +13,7 @@ def get_input(file):
 
 
 def main():
-    adapters = get_input('sample.txt')
+    adapters = get_input('input.txt')
     adapters.sort()
 
     charging_outlet = 0
