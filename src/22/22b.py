@@ -32,22 +32,30 @@ def deja_vu(hand, previous_hands):
 
 
 def play_game(p1_hand, p2_hand, game):
-    p1_hand = p1_hand.copy()
-    p2_hand = p2_hand.copy()
     p1_previous_hands = []
     p2_previous_hands = []
-    print(f'== Game {game} ==\n')
+    print(f'\n== Game {game} ==\n')
     round_ = 1
     while p1_hand and p2_hand:
         # Make sure we haven't been here before in this game
-        if deja_vu(p1_hand, p1_previous_hands) and deja_vu(p2_hand, p2_previous_hands):
+        if deja_vu(p1_hand, p1_previous_hands) and \
+           deja_vu(p2_hand, p2_previous_hands):
             return 1  # Player 1 wins
         else:
-            # If this is a new situation in this game, save the new hands
+            # If this is a new situation in this game,
+            # save the new hands
             p1_previous_hands.append(hand_to_hash(p1_hand))
             p2_previous_hands.append(hand_to_hash(p2_hand))
             # Play new round
             p1_hand, p2_hand = play_round(p1_hand, p2_hand, game, round_)
+
+        if p1_hand and not p2_hand:
+            print(f"Player 1 wins game {game}!\n")
+            return 1
+
+        if p2_hand and not p1_hand:
+            print(f"Player 2 wins game {game}!\n")
+            return 2
 
         round_ += 1
 
@@ -60,17 +68,28 @@ def play_round(p1_hand, p2_hand, game, round_):
     print(f"Player 1 plays: {p1_card}")
     p2_card = p2_hand.pop(0)
     print(f"Player 2 plays: {p2_card}")
+    # If both players have at least as many cards in their own decks as
+    # the number on the card they just dealt
     if len(p1_hand) >= p1_card and len(p2_hand) >= p2_card:
-        # Determine who wins the round by playing a new game of Recursive Combat
-        pass
-    else:
-        # Determine who wins the round by comparing cards
-        if p1_card > p2_card:
-            print("Player 1 wins the round!\n")
+        # The winner of the round is determined by recursing into a
+        # sub-game of Recursive Combat
+        p1_hand_copy = p1_hand[:p1_card].copy()
+        p2_hand_copy = p2_hand[:p2_card].copy()
+        winner = play_game(p1_hand_copy, p2_hand_copy, game + 1)
+        if winner == 1:
             p1_hand.append(p1_card)
             p1_hand.append(p2_card)
         else:
-            print("Player 2 wins the round!\n")
+            p2_hand.append(p2_card)
+            p2_hand.append(p1_card)
+    else:
+        # Determine who wins the round by comparing cards
+        if p1_card > p2_card:
+            print(f"Player 1 wins round {round_} of game {game}!\n")
+            p1_hand.append(p1_card)
+            p1_hand.append(p2_card)
+        else:
+            print(f"Player 2 wins round {round_} of game {game}!\n")
             p2_hand.append(p2_card)
             p2_hand.append(p1_card)
 
@@ -85,7 +104,7 @@ def calculate_score(hand):
 
 
 def main():
-    p1_hand, p2_hand = get_input('sample.txt')
+    p1_hand, p2_hand = get_input('input.txt')
     game = 1
     while p1_hand and p2_hand:
         play_game(p1_hand, p2_hand, game)
@@ -99,3 +118,10 @@ def main():
 
 
 main()
+
+# This gives the correct outputs (291 on sample.txt, 35070 on
+# input.txt), but it takes several minutes to compute, and the 'game'
+# variable doesn't update properly.
+#
+# TODO: Make the 'game' variable global.
+# TODO: Try to speed it up after studying how to combine recursion with concurrency.
